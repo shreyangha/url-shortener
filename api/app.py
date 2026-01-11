@@ -24,12 +24,15 @@ def shorten():
     data = request.get_json()
     original_url = data.get('url')
 
+    if not original_url:
+        return jsonify({"error": "URL is required"}), 400
+
     code = generate_code()
     r.set(code, original_url)
 
-    return jsonify({
-        "short_url": f"http://localhost:5000/{code}"
-    })
+    short_url = request.host_url.rstrip("/") + "/" + code
+
+    return jsonify({"short_url": short_url})
 
 @app.route('/<code>')
 def redirect_url(code):
